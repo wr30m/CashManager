@@ -12,11 +12,19 @@ import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements AddBalanceDialogFragment.EditAddBalanceFragment {
 
     private ImageButton changeBalanceButton;
     private TextView balanceText;
-
+    private PieChart diagram;
     private BalanceManager balanceManager;
 
     @Override
@@ -38,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements AddBalanceDialogF
 
         balanceText = findViewById(R.id.balance_text);
 
+        diagram = findViewById(R.id.diagram);
+        diagram.setUsePercentValues(true);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements AddBalanceDialogF
                         .setAction("Action", null).show();
             }
         });
+        mockDiagram();
     }
 
     @Override
@@ -75,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements AddBalanceDialogF
         updateBalance(inputText);
     }
 
-    public void startAddBalanceFragment() {
+    private void startAddBalanceFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         AddBalanceDialogFragment addBalanceDialogFragment = AddBalanceDialogFragment.newInstance();
         addBalanceDialogFragment.show(fragmentManager, "change_balance_dialog");
@@ -85,5 +97,18 @@ public class MainActivity extends AppCompatActivity implements AddBalanceDialogF
         Double newBalance = Double.parseDouble(inputBalance);
         balanceManager.setBalance(newBalance);
         balanceText.setText(newBalance.toString());
+    }
+
+    private void mockDiagram() {
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(18.5f, "Green"));
+        entries.add(new PieEntry(26.7f, "Yellow"));
+        entries.add(new PieEntry(24.0f, "Red"));
+        entries.add(new PieEntry(30.8f, "Blue"));
+
+        PieDataSet set = new PieDataSet(entries, "Results");
+        PieData data = new PieData(set);
+        diagram.setData(data);
+        diagram.invalidate();
     }
 }
