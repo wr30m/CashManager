@@ -12,13 +12,16 @@ import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.kirazavrik.cashmanager.models.Category;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements AddBalanceDialogFragment.EditAddBalanceFragment {
 
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements AddBalanceDialogF
     private TextView balanceText;
     private PieChart diagram;
     private BalanceManager balanceManager;
+    private CategoryManager categoryManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements AddBalanceDialogF
                         .setAction("Action", null).show();
             }
         });
+        categoryManager = CategoryManager.getInstance();
+
         mockDiagram();
     }
 
@@ -101,13 +107,18 @@ public class MainActivity extends AppCompatActivity implements AddBalanceDialogF
 
     private void mockDiagram() {
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(18.5f, "Green"));
-        entries.add(new PieEntry(26.7f, "Yellow"));
-        entries.add(new PieEntry(24.0f, "Red"));
-        entries.add(new PieEntry(30.8f, "Blue"));
+        Random r = new Random();
+        float min = 0.1f;
+        float max = 100.1f;
+        for (Category category : categoryManager.getCategories()) {
+            //float f = (float) category.getTotalWaste();
+            float random = min + r.nextFloat() * (max - min);
+            entries.add(new PieEntry(random, category.getLabel()));
+        }
 
         PieDataSet set = new PieDataSet(entries, "Results");
         PieData data = new PieData(set);
+        data.setValueFormatter(new PercentFormatter());
         diagram.setData(data);
         diagram.invalidate();
     }
